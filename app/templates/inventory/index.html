@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>库存管理</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                库存更新
+                            </div>
+                            <div class="card-body">
+                                <p>上传FBA库存表和当前库存文件，自动更新库存数据，导出更新后的CSV文件。</p>
+                                <a href="{{ url_for('inventory.update') }}" class="btn btn-info">开始更新</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-secondary text-white">
+                                更新历史
+                            </div>
+                            <div class="card-body">
+                                <p>查看历史更新记录，下载历史更新文件。</p>
+                                <a href="{{ url_for('inventory.history') }}" class="btn btn-secondary">查看历史</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        最近更新记录
+                    </div>
+                    <div class="card-body">
+                        {% if history %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>更新时间</th>
+                                        <th>源文件</th>
+                                        <th>更新记录数</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in history %}
+                                    <tr>
+                                        <td>{{ record.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <td>{{ record.source_file.split('/')[-1] if record.source_file else 'N/A' }}</td>
+                                        <td>{{ record.updated_count }}</td>
+                                        <td>
+                                            {% if record.output_file %}
+                                            <a href="{{ url_for('static', filename='exports/' + record.output_file.split('/')[-1]) }}" class="btn btn-sm btn-primary">下载</a>
+                                            {% else %}
+                                            <span class="text-muted">无文件</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            暂无更新记录
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

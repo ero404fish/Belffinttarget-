@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>库存更新工具</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('inventory.update') }}" method="post" enctype="multipart/form-data">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="fba_file" class="form-label">FBA库存表 (Excel格式)</label>
+                            <input class="form-control" type="file" id="fba_file" name="fba_file" accept=".xlsx" required>
+                            <div class="form-text">请上传包含"工厂SKU"和"可售库存"列的Excel文件</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inventory_file" class="form-label">库存文件 (CSV格式)</label>
+                            <input class="form-control" type="file" id="inventory_file" name="inventory_file" accept=".csv" required>
+                            <div class="form-text">请上传包含"sku"、"warehouse_id"和"quantity"列的CSV文件</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <div class="alert alert-info">
+                                <h5>操作说明</h5>
+                                <ol>
+                                    <li>上传FBA库存表（Excel格式）和当前库存文件（CSV格式）</li>
+                                    <li>系统将自动生成SKU映射关系，并更新库存数据</li>
+                                    <li>生成的CSV文件可用于Target平台库存更新</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-primary">开始更新</button>
+                            <button type="reset" class="btn btn-secondary">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

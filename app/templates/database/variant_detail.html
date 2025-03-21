@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>变体详情: {{ variant.sku }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>变体信息</h5>
+                        <table class="table">
+                            <tr>
+                                <th>变体SKU</th>
+                                <td>{{ variant.sku }}</td>
+                            </tr>
+                            <tr>
+                                <th>颜色代码</th>
+                                <td>{{ variant.color_code }}</td>
+                            </tr>
+                            <tr>
+                                <th>颜色名称</th>
+                                <td>{{ variant.color_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>创建时间</th>
+                                <td>{{ variant.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>所属产品</h5>
+                        <table class="table">
+                            <tr>
+                                <th>基础SKU</th>
+                                <td>{{ variant.base_product.base_sku }}</td>
+                            </tr>
+                            <tr>
+                                <th>产品名称</th>
+                                <td>{{ variant.base_product.title }}</td>
+                            </tr>
+                            <tr>
+                                <th>产品类型</th>
+                                <td>{{ variant.base_product.item_type }}</td>
+                            </tr>
+                            <tr>
+                                <th>操作</th>
+                                <td>
+                                    <a href="{{ url_for('database.product_detail', product_id=variant.base_product.id) }}" class="btn btn-sm btn-info">查看产品</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <h5>仓库SKU列表</h5>
+                {% if variant.warehouse_skus %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>仓库代码</th>
+                                <th>仓库SKU</th>
+                                <th>库存数量</th>
+                                <th>更新时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ws in variant.warehouse_skus %}
+                            <tr>
+                                <td>{{ ws.warehouse_code }}</td>
+                                <td>{{ ws.warehouse_sku }}</td>
+                                <td>{{ ws.inventory.quantity if ws.inventory else 0 }}</td>
+                                <td>{{ ws.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    该变体暂无仓库SKU
+                </div>
+                {% endif %}
+                
+                <div class="mt-3">
+                    <a href="{{ url_for('database.product_detail', product_id=variant.base_product.id) }}" class="btn btn-secondary">返回产品详情</a>
+                    <a href="{{ url_for('database.index') }}" class="btn btn-secondary">返回数据库</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

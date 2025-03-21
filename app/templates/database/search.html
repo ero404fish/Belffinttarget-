@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>搜索产品</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('database.search') }}" method="get">
+                    <div class="mb-3">
+                        <label for="query" class="form-label">搜索关键词</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="query" name="query" placeholder="输入SKU或产品名称">
+                            <button class="btn btn-primary" type="submit">搜索</button>
+                        </div>
+                        <div class="form-text">可以搜索SKU、产品名称等信息</div>
+                    </div>
+                </form>
+                
+                <div class="alert alert-info mt-4">
+                    <h5>搜索提示</h5>
+                    <ul>
+                        <li>输入完整或部分SKU可以查找特定产品</li>
+                        <li>输入产品名称关键词可以查找相关产品</li>
+                        <li>搜索结果将显示匹配的产品和变体</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

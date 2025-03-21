@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>产品数据库</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">产品总数</h5>
+                                <p class="card-text display-4">{{ product_count }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">变体总数</h5>
+                                <p class="card-text display-4">{{ variant_count }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">仓库SKU总数</h5>
+                                <p class="card-text display-4">{{ warehouse_count }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                搜索产品
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ url_for('database.search') }}" method="get">
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" name="query" placeholder="输入SKU或产品名称">
+                                        <button class="btn btn-primary" type="submit">搜索</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                数据管理
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <a href="{{ url_for('database.import_data') }}" class="btn btn-success">导入产品数据</a>
+                                    <a href="{{ url_for('database.export_data') }}" class="btn btn-outline-success">导出产品数据</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        最近添加的产品
+                    </div>
+                    <div class="card-body">
+                        {% if recent_products %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>基础SKU</th>
+                                        <th>产品名称</th>
+                                        <th>变体数量</th>
+                                        <th>添加时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in recent_products %}
+                                    <tr>
+                                        <td>{{ product.base_sku }}</td>
+                                        <td>{{ product.title }}</td>
+                                        <td>{{ product.variants|length }}</td>
+                                        <td>{{ product.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <td>
+                                            <a href="{{ url_for('database.product_detail', product_id=product.id) }}" class="btn btn-sm btn-info">查看</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            暂无产品数据，请先导入产品数据。
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

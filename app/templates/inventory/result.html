@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>库存更新结果</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success">
+                    <h5>更新成功！</h5>
+                    <p>共更新 {{ updated_count }} 条记录</p>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                下载更新后的文件
+                            </div>
+                            <div class="card-body">
+                                <p>更新后的CSV文件已生成，可用于Target平台库存更新。</p>
+                                <a href="{{ download_url }}" class="btn btn-primary">下载CSV文件</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-secondary text-white">
+                                备份信息
+                            </div>
+                            <div class="card-body">
+                                <p>原始文件已备份，备份路径：</p>
+                                <code>{{ backup_path }}</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        <a href="{{ url_for('inventory.update') }}" class="btn btn-primary">继续更新</a>
+                        <a href="{{ url_for('inventory.index') }}" class="btn btn-secondary">返回库存管理</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

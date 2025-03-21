@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4>颜色配置管理</h4>
+                <div>
+                    <button type="button" class="btn btn-light me-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        上传配置
+                    </button>
+                    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addModal">
+                        添加颜色
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if colors %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>颜色代码</th>
+                                <th>显示名称</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for color in colors %}
+                            <tr>
+                                <td>{{ color.color_code }}</td>
+                                <td>{{ color.display_name }}</td>
+                                <td>{{ color.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger" 
+                                            onclick="confirmDelete('{{ color.id }}', '{{ color.display_name }}')">删除</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    暂无颜色配置，请点击右上角按钮添加颜色配置。
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 上传配置模态框 -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">上传颜色配置</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('product.upload_color_config') }}" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="color_file" class="form-label">选择颜色配置文件</label>
+                        <input class="form-control" type="file" id="color_file" name="color_file" accept=".csv,.xlsx" required>
+                        <div class="form-text">请上传CSV或Excel格式的颜色配置文件，文件必须包含color_code和display_name列。</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">上传</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 添加颜色模态框 -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加颜色</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('product.add_color') }}" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="color_code" class="form-label">颜色代码</label>
+                        <input type="text" class="form-control" id="color_code" name="color_code" required>
+                        <div class="form-text">例如：RED, BLUE, GREEN等</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="display_name" class="form-label">显示名称</label>
+                        <input type="text" class="form-control" id="display_name" name="display_name" required>
+                        <div class="form-text">例如：红色, 蓝色, 绿色等</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 删除确认模态框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">确认删除</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>确定要删除颜色 <span id="colorName"></span> 吗？此操作不可恢复。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <form id="deleteForm" action="" method="post">
+                    <button type="submit" class="btn btn-danger">删除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function confirmDelete(colorId, colorName) {
+        document.getElementById('colorName').textContent = colorName;
+        document.getElementById('deleteForm').action = "{{ url_for('product.delete_color', color_id=0) }}".replace('0', colorId);
+        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    }
+</script>
+{% endblock %}

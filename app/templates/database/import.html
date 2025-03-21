@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>导入产品数据</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('database.import_data') }}" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="product_file" class="form-label">选择产品数据文件</label>
+                        <input class="form-control" type="file" id="product_file" name="product_file" accept=".csv,.xlsx" required>
+                        <div class="form-text">请上传CSV或Excel格式的产品数据文件，文件必须包含sku列。</div>
+                    </div>
+                    
+                    <div class="alert alert-info mb-3">
+                        <h5>文件格式说明</h5>
+                        <p>导入文件应包含以下列：</p>
+                        <ul>
+                            <li><strong>sku</strong>：产品SKU（必需）</li>
+                            <li><strong>Product Title</strong>：产品名称</li>
+                            <li><strong>Item Type</strong>：产品类型</li>
+                            <li><strong>Item Type ID</strong>：产品类型ID</li>
+                            <li><strong>Product Depth</strong>：产品深度</li>
+                            <li><strong>Product Height</strong>：产品高度</li>
+                            <li><strong>Product Weight</strong>：产品重量</li>
+                            <li><strong>Product Width</strong>：产品宽度</li>
+                            <li><strong>仓库SKU1-8</strong>：仓库SKU</li>
+                            <li><strong>数量1-8QTY1-8</strong>：对应仓库SKU的库存数量</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">开始导入</button>
+                        <a href="{{ url_for('database.index') }}" class="btn btn-secondary">返回数据库</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

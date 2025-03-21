@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>欢迎使用 Belffin Target 运营工具</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-header bg-success text-white">
+                                产品上架工具
+                            </div>
+                            <div class="card-body">
+                                <p>快速填写产品信息，自动生成变体，导出CSV文件用于Target平台上架。</p>
+                                <a href="{{ url_for('product.listing') }}" class="btn btn-success">开始使用</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-header bg-info text-white">
+                                库存更新工具
+                            </div>
+                            <div class="card-body">
+                                <p>导入FBA库存表和当前库存文件，自动更新库存数据，导出更新后的CSV文件。</p>
+                                <a href="{{ url_for('inventory.update') }}" class="btn btn-info">开始使用</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-header bg-warning text-dark">
+                                产品数据库
+                            </div>
+                            <div class="card-body">
+                                <p>管理产品信息，搜索产品，查看库存状态，导出产品数据。</p>
+                                <a href="#" class="btn btn-warning">即将推出</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

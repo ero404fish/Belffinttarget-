@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>产品上架工具</h4>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="form-tab" data-bs-toggle="tab" data-bs-target="#form" type="button" role="tab">产品信息</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="variants-tab" data-bs-toggle="tab" data-bs-target="#variants" type="button" role="tab">变体预览</button>
+                    </li>
+                </ul>
+                <div class="tab-content mt-3" id="productTabsContent">
+                    <div class="tab-pane fade show active" id="form" role="tabpanel">
+                        <form id="productForm" method="post" action="{{ url_for('product.export_csv') }}">
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label for="template_id" class="form-label">选择模板</label>
+                                    <select class="form-select" id="template_id" name="template_id" required>
+                                        <option value="">-- 请选择模板 --</option>
+                                        {% for template in templates %}
+                                        <option value="{{ template.id }}">{{ template.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="base_sku" class="form-label">基础SKU</label>
+                                    <input type="text" class="form-control" id="base_sku" name="base_sku" required>
+                                    <div class="form-text">只允许字母、数字、下划线和连字符</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="base_name" class="form-label">基础名称</label>
+                                    <input type="text" class="form-control" id="base_name" name="base_name" required>
+                                </div>
+                            </div>
+                            
+                            <div id="templateFields" class="mb-3">
+                                <!-- 模板字段将通过AJAX加载 -->
+                                <div class="alert alert-info">请先选择模板</div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button type="button" id="previewBtn" class="btn btn-primary">预览变体</button>
+                                    <button type="button" id="exportBtn" class="btn btn-success">生成CSV</button>
+                                    <button type="reset" class="btn btn-secondary">重置表单</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="variants" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="variantsTable">
+                                <thead>
+                                    <tr>
+                                        <th>SKU变体</th>
+                                        <th>产品名称变体</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 变体预览将通过AJAX加载 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 下载模态框 -->
+<div class="modal fade" id="downloadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">CSV文件生成成功</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>您的CSV文件已生成成功，请点击下方按钮下载。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                <a href="#" id="downloadLink" class="btn btn-primary">下载CSV</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // 加载模板字段
+        $('#template_id').change(function() {
+            const templateId = $(this).val();
+            if (templateId) {
+                $.get(`/product/template/${templateId}`, function(data) {
+                    $('#templateFields').html(data);
+                });
+            } else {
+                $('#templateFields').html('<div class="alert alert-info">请先选择模板</div>');
+            }
+        });
+        
+        // 预览变体
+        $('#previewBtn').click(function() {
+            const baseSku = $('#base_sku').val();
+            const baseName = $('#base_name').val();
+            
+            if (!baseSku) {
+                alert('请输入基础SKU');
+                return;
+            }
+            
+            $.ajax({
+                url: '{{ url_for("product.generate_variants") }}',
+                method: 'POST',
+                data: {
+                    base_sku: baseSku,
+                    base_name: baseName
+                },
+                success: function(response) {
+                    if (response.error) {
+                        alert(response.error);
+                        return;
+                    }
+                    
+                    const variants = response.variants;
+                    let tableHtml = '';
+                    
+                    variants.forEach(function(variant) {
+                        tableHtml += `<tr><td>${variant.sku}</td><td>${variant.name}</td></tr>`;
+                    });
+                    
+                    $('#variantsTable tbody').html(tableHtml);
+                    $('#variants-tab').tab('show');
+                },
+                error: function() {
+                    alert('生成变体失败，请重试');
+                }
+            });
+        });
+        
+        // 导出CSV
+        $('#exportBtn').click(function() {
+            const formData = $('#productForm').serialize();
+            
+            $.ajax({
+                url: '{{ url_for("product.export_csv") }}',
+                method: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.error) {
+                        alert(response.error);
+                        return;
+                    }
+                    
+                    if (response.success && response.download_url) {
+                        $('#downloadLink').attr('href', response.download_url);
+                        $('#downloadModal').modal('show');
+                    }
+                },
+                error: function() {
+                    alert('生成CSV失败，请重试');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

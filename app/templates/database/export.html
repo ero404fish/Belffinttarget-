@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>导出产品数据</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success mb-4">
+                    <h5>导出成功！</h5>
+                    <p>产品数据已成功导出，请点击下方按钮下载。</p>
+                </div>
+                
+                <div class="text-center mb-4">
+                    <a href="{{ download_url }}" class="btn btn-lg btn-success">
+                        <i class="bi bi-download"></i> 下载Excel文件
+                    </a>
+                </div>
+                
+                <div class="alert alert-info">
+                    <h5>文件说明</h5>
+                    <p>导出的Excel文件包含以下信息：</p>
+                    <ul>
+                        <li>产品基本信息（SKU、名称、类型等）</li>
+                        <li>产品尺寸信息（深度、高度、宽度、重量）</li>
+                        <li>变体信息（颜色代码、颜色名称）</li>
+                        <li>仓库SKU和库存信息</li>
+                    </ul>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('database.index') }}" class="btn btn-secondary">返回数据库</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

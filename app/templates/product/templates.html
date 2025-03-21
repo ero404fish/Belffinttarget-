@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4>模板管理</h4>
+                <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                    上传模板
+                </button>
+            </div>
+            <div class="card-body">
+                {% if templates %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>模板名称</th>
+                                <th>创建时间</th>
+                                <th>字段数量</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for template in templates %}
+                            <tr>
+                                <td>{{ template.name }}</td>
+                                <td>{{ template.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ template.fields|length }}</td>
+                                <td>
+                                    <a href="{{ url_for('product.template_detail', template_id=template.id) }}" class="btn btn-sm btn-info">查看</a>
+                                    <button type="button" class="btn btn-sm btn-danger" 
+                                            onclick="confirmDelete('{{ template.id }}', '{{ template.name }}')">删除</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    暂无模板，请点击右上角"上传模板"按钮添加模板。
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 上传模板模态框 -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">上传模板</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('product.upload_template') }}" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="template_file" class="form-label">选择CSV模板文件</label>
+                        <input class="form-control" type="file" id="template_file" name="template_file" accept=".csv" required>
+                        <div class="form-text">请上传CSV格式的模板文件，文件中的第一行将作为字段名。</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">上传</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 删除确认模态框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">确认删除</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>确定要删除模板 <span id="templateName"></span> 吗？此操作不可恢复。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <form id="deleteForm" action="" method="post">
+                    <button type="submit" class="btn btn-danger">删除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function confirmDelete(templateId, templateName) {
+        document.getElementById('templateName').textContent = templateName;
+        document.getElementById('deleteForm').action = "{{ url_for('product.delete_template', template_id=0) }}".replace('0', templateId);
+        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    }
+</script>
+{% endblock %}
